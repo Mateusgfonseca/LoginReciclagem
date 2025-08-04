@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Coleta de Recicláveis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">♻️ EcoColeta</h1>
+            <nav class="nav">
+                <button id="btnAdmin" class="btn-secondary">Área Administrativa</button>
+                <button id="btnLogoutHeader" class="btn-secondary" style="display: none;">✕ Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Tela Principal - Formulário de Agendamento -->
+    <main id="telaAgendamento" class="tela ativa">
+        <div class="container">
+            <section class="hero">
+                <h2>Agende sua Coleta de Recicláveis</h2>
+                <p>Contribua para um meio ambiente mais limpo! Preencha o formulário abaixo para agendar a coleta dos seus materiais recicláveis.</p>
+            </section>
+
+            <form id="formAgendamento" class="form-card">
+                <div class="form-group">
+                    <label for="nomeCompleto">Nome Completo *</label>
+                    <input type="text" id="nomeCompleto" name="nomeCompleto" required minlength="3" maxlength="100">
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" required maxlength="100">
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone *</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999" required maxlength="15">
+                    <span class="error-message"></span>
+                </div>
+
+                <fieldset class="endereco-fieldset">
+                    <legend>Endereço *</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-group flex-3">
+                            <label for="enderecoRua">Rua/Avenida *</label>
+                            <input type="text" id="enderecoRua" name="enderecoRua" required minlength="2" maxlength="100">
+                            <span class="error-message"></span>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="enderecoNumero">Número *</label>
+                            <input type="text" id="enderecoNumero" name="enderecoNumero" required maxlength="10" placeholder="123 ou S/N">
+                            <span class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="enderecoBairro">Bairro *</label>
+                            <input type="text" id="enderecoBairro" name="enderecoBairro" required minlength="2" maxlength="50">
+                            <span class="error-message"></span>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="enderecoCidade">Cidade *</label>
+                            <input type="text" id="enderecoCidade" name="enderecoCidade" required minlength="2" maxlength="50">
+                            <span class="error-message"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <label for="dataSugerida">Data Sugerida *</label>
+                    <input type="date" id="dataSugerida" name="dataSugerida" required>
+                    <small class="help-text">Mínimo de 2 dias úteis a partir de hoje</small>
+                    <span class="error-message"></span>
+                </div>
+
+                <fieldset class="materiais-fieldset">
+                    <legend>Tipos de Material para Coleta *</legend>
+                    <div id="tiposMateriais" class="checkbox-grid">
+                        <!-- Carregado dinamicamente -->
+                    </div>
+                    <span class="error-message"></span>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Agendar Coleta</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Tela de Confirmação -->
+    <div id="telaConfirmacao" class="tela">
+        <div class="container">
+            <div class="confirmation-card">
+                <div class="success-icon">✅</div>
+                <h2>Agendamento Realizado!</h2>
+                <div class="protocolo-info">
+                    <h3>Protocolo: <span id="protocoloNumero"></span></h3>
+                </div>
+                
+                <div class="dados-confirmacao">
+                    <h4>Dados do Agendamento:</h4>
+                    <div class="dados-lista">
+                        <p><strong>Nome:</strong> <span id="confNome"></span></p>
+                        <p><strong>E-mail:</strong> <span id="confEmail"></span></p>
+                        <p><strong>Telefone:</strong> <span id="confTelefone"></span></p>
+                        <p><strong>Endereço:</strong> <span id="confEndereco"></span></p>
+                        <p><strong>Data:</strong> <span id="confData"></span></p>
+                        <p><strong>Materiais:</strong> <span id="confMateriais"></span></p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button id="btnDownloadAgendamento" class="btn-secondary">
+                        📄 Baixar Comprovante
+                    </button>
+                    <button id="btnNovoAgendamento" class="btn-primary">Fazer Novo Agendamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Login -->
+    <div id="telaLogin" class="tela">
+        <div class="container">
+            <div class="login-card">
+                <h2>Acesso Administrativo</h2>
+                <form id="formLogin">
+                    <div class="form-group">
+                        <label for="loginEmail">E-mail:</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginSenha">Senha:</label>
+                        <input type="password" id="loginSenha" name="senha" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Entrar</button>
+                        <button type="button" id="btnVoltarLogin" class="btn-secondary">Voltar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Administrativa -->
+    <div id="telaAdmin" class="tela">
+        <div class="container">
+            <header class="admin-header">
+                <h2>Painel Administrativo</h2>
+            </header>
+
+            <!-- Filtros -->
+            <div class="filtros-card">
+                <h3>Filtros</h3>
+                <form id="formFiltros" class="filtros-form">
+                    <div class="form-group">
+                        <label for="filtroStatus">Status</label>
+                        <select id="filtroStatus" name="status">
+                            <option value="">Todos</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroDataInicio">Data Início</label>
+                        <input type="date" id="filtroDataInicio" name="dataInicio">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroDataFim">Data Fim</label>
+                        <input type="date" id="filtroDataFim" name="dataFim">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Aplicar Filtros</button>
+                        <button type="button" id="btnLimparFiltros" class="btn-secondary">Limpar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de Agendamentos -->
+            <div class="agendamentos-card">
+                <h3>Lista de Agendamentos</h3>
+                <div id="listaAgendamentos"></div>
+                
+                <!-- Controles de Paginação -->
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <div class="pagination-info">
+                        <span id="paginationInfo">Mostrando 0 de 0 agendamentos</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button id="btnPrimeiraPagina" class="btn-small btn-secondary">Primeira</button>
+                        <button id="btnPaginaAnterior" class="btn-small btn-secondary">Anterior</button>
+                        <span class="pagination-pages" id="paginationPages"></span>
+                        <button id="btnProximaPagina" class="btn-small btn-secondary">Próxima</button>
+                        <button id="btnUltimaPagina" class="btn-small btn-secondary">Última</button>
+                    </div>
+                    <div class="pagination-size">
+                        <label for="itensPorPagina">Itens por página:</label>
+                        <select id="itensPorPagina" class="pagination-select">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="modalDetalhes" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes do Agendamento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detalhesConteudo">
+                    <!-- Carregado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Atualizar Status -->
+    <div id="modalStatus" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Atualizar Status</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formStatus">
+                    <input type="hidden" id="statusAgendamentoId">
+                    
+                    <div class="form-group">
+                        <label for="novoStatus">Novo Status</label>
+                        <select id="novoStatus" name="status" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="grupoJustificativa" style="display: none;">
+                        <label for="justificativa">Justificativa *</label>
+                        <textarea id="justificativa" name="justificativa" rows="3" placeholder="Obrigatório para status Concluído ou Cancelado"></textarea>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary btn-small">Atualizar</button>
+                        <button type="button" class="modal-close btn-secondary btn-small">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
